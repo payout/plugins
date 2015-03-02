@@ -37,7 +37,12 @@ class Ribbon::Plugins
       def call(call_stack, *args)
         wrapped = call_stack.pop
         raise Errors::Error, 'call stack too short' unless wrapped
-        define_singleton_method("perform_#{subject}") { wrapped.call(call_stack, *args) }
+
+        define_singleton_method("perform_#{subject}") { |*new_args|
+          args = new_args unless new_args.empty?
+          wrapped.call(call_stack, *args)
+        }
+
         instance_exec(*args, &block)
       end
     end
@@ -50,6 +55,7 @@ class Ribbon::Plugins
       end
 
       def call(call_stack, *args)
+        raise Errors::Error, 'receiving non-empty call stack' unless call_stack.empty?
         block.call(*args)
       end
     end
