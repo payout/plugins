@@ -1,4 +1,4 @@
-[![Gem Version](https://badge.fury.io/rb/ribbon-plugins.svg)](http://badge.fury.io/rb/ribbon-plugins)
+[![Gem Version](https://badge.fury.io/rb/ribbon-plugins.svg)](http://badge.fury.io/rb/ribbon-plugins) [![Code Climate](https://codeclimate.com/github/ribbon/plugins/badges/gpa.svg)](https://codeclimate.com/github/ribbon/plugins)
 
 # Plugins
 
