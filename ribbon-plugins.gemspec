@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Robert Honer"]
   s.email       = ['robert@ribbonpayments.com']
   s.files       = Dir['lib/**/*.rb']
+  s.license     = 'BSD'
 
-  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'rspec', '~>3.2', '>=3.2.0'
 end
