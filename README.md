@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/ribbon-plugins.svg)](http://badge.fury.io/rb/ribbon-plugins)
+
 # Plugins
 
 Easily add plugins to any library. Plugins takes care of calling before, after
