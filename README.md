@@ -62,7 +62,6 @@ There are two ways to define a plugin.
 
 ### Extending `Plugins::Plugin`
 
-For example:
 ```ruby
 require 'ribbon/plugins'
 
