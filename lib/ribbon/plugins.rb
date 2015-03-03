@@ -7,13 +7,15 @@ module Ribbon
     autoload(:AroundStack, 'ribbon/plugins/around_stack')
     autoload(:BlockStack,  'ribbon/plugins/block_stack')
 
-    def initialize(plugin_module=nil)
-      @_plugin_module = plugin_module
+    attr_reader :component
+
+    def initialize(component=nil)
+      @component = component
     end
 
     def add(plugin=nil, &block)
       plugin = _load(plugin, &block)
-      _add_plugin(plugin.new)
+      _add_plugin(plugin.new(self))
     end
 
     def clear
@@ -50,11 +52,14 @@ module Ribbon
 
     def _add_plugin(plugin)
       _plugins.push(plugin)
+
       _around_stack.push { |subject, *args|
         plugin.around(subject, *args) {
           perform_block
         }
       }
+
+      plugin
     end
 
     def _load(plugin, &block)
@@ -72,18 +77,11 @@ module Ribbon
       when Class
         plugin < Plugin && plugin or
           raise Errors::LoadError, "Invalid plugin class: #{plugin.inspect} Must extend Plugin."
-      when Symbol, String
-        _load_plugin_by_name(plugin)
       when Proc
         Plugin.create(&plugin)
       else
         raise Errors::LoadError, "Invalid plugin identifier: #{plugin.inspect}"
       end
-    end
-
-    def _load_plugin_by_name(name)
-      @_plugin_module && @_plugin_module.const_get("#{name.upcase}Plugin") or
-        raise Errors::LoadError, "Cannot load plugin by name. No plugin module provided."
     end
   end # Plugins
 end # Ribbon

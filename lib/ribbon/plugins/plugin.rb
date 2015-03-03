@@ -33,6 +33,12 @@ class Ribbon::Plugins
       end
     end
 
+    attr_reader :plugins
+
+    def initialize(plugins=nil)
+      @plugins = plugins
+    end
+
     def before(subject, *args)
       _callbacks(:before, subject).call(*args)
     end

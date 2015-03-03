@@ -1,7 +1,55 @@
 module Ribbon
   RSpec.describe Plugins do
+    let(:plugins) { Plugins.new }
+    let(:plugin) { Plugins::Plugin.create }
     let(:args) { [1, :two, 'three'] }
     let(:block) { Proc.new {} }
+
+    describe '#add' do
+      subject { plugins.add(plugin) }
+
+      context 'with valid plugin' do
+        after { subject }
+        it 'should pass plugins to plugin' do
+          expect(plugin).to receive(:new).with(plugins).once
+        end
+
+        it 'should return plugin instance' do
+          expect(subject).to be_a Plugins::Plugin
+        end
+      end # valid plugin
+
+      context 'with proc' do
+        subject { plugins.add(Proc.new {}) }
+
+        it 'should return a plugin instance' do
+          expect(subject).to be_a Plugins::Plugin
+        end
+
+        it 'should have reference to plugins' do
+          expect(subject.plugins).to eq plugins
+        end
+      end # with proc
+
+      context 'with block' do
+        subject { plugins.add(&Proc.new {}) }
+
+        it 'should return a plugin instance' do
+          expect(subject).to be_a Plugins::Plugin
+        end
+      end
+
+      context 'with invalid plugin class' do
+        let(:plugin) { Class.new }
+
+        it 'should raise error' do
+          expect { subject }.to raise_error(
+            Plugins::Errors::LoadError,
+            /^Invalid plugin class: #<Class:.*> Must extend Plugin.$/
+          )
+        end
+      end # invalid plugin class
+    end # #add
 
     describe '#around' do
       # Need to use a separate call_counter because AroundStack doesn't call
@@ -19,15 +67,13 @@ module Ribbon
       after { subject }
 
       context 'with no plugins' do
-        let(:plugins) { Plugins.new }
         it 'should run block' do
           expect(block).to receive(:call).with(*args).once
         end
       end # with no plugins
 
       context 'with empty plugin' do
-        let(:plugin) { Plugins::Plugin.create }
-        let(:plugins) { Plugins.new.tap {|p| p.add(plugin) } }
+        before { plugins.add(plugin) }
 
         it 'should run block' do
           expect(block).to receive(:call).with(*args).once
@@ -44,7 +90,7 @@ module Ribbon
           }
         }
 
-        let(:plugins) { Plugins.new.tap {|p| p.add(plugin) } }
+        before { plugins.add(plugin) }
 
         it 'should run block' do
           expect(block).to receive(:call).with(*args).once
@@ -65,7 +111,7 @@ module Ribbon
           }
         }
 
-        let(:plugins) { Plugins.new.tap {|p| p.add(plugin); p.add(plugin); p.add(plugin) } }
+        before { plugins.add(plugin); plugins.add(plugin); plugins.add(plugin) }
 
         it 'should run block' do
           expect(block).to receive(:call).with(*args).once
@@ -78,7 +124,7 @@ module Ribbon
     end
 
     describe '#perform' do
-      subject { Plugins.new }
+      subject { plugins }
       after { subject.perform(:subject, *args, &block) }
 
       it { is_expected.to receive(:before).with(:subject, *args, &block).once }

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ribbon-plugins (1.0.0)
+    ribbon-plugins (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -26,4 +26,4 @@ PLATFORMS
 
 DEPENDENCIES
   ribbon-plugins!
-  rspec
+  rspec (~> 3.2, >= 3.2.0)
