@@ -11,7 +11,7 @@ module Ribbon
 
     def initialize(component=nil, &block)
       @component = component
-      @_load_plugin_block = block
+      @_plugin_loader = block
     end
 
     def add(plugin=nil, &block)
@@ -74,7 +74,7 @@ module Ribbon
     end
 
     def _load_plugin(plugin)
-      _load_plugin_block(plugin).tap { |p| plugin = p if p }
+      _plugin_loader(plugin).tap { |p| plugin = p if p }
 
       case plugin
       when Class
@@ -87,8 +87,8 @@ module Ribbon
       end
     end
 
-    def _load_plugin_block(plugin)
-      @_load_plugin_block && @_load_plugin_block.call(plugin)
+    def _plugin_loader(plugin)
+      @_plugin_loader && @_plugin_loader.call(plugin)
     end
   end # Plugins
 end # Ribbon
