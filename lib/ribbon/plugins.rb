@@ -9,8 +9,9 @@ module Ribbon
 
     attr_reader :component
 
-    def initialize(component=nil)
+    def initialize(component=nil, &block)
       @component = component
+      @_load_plugin_block = block
     end
 
     def add(plugin=nil, &block)
@@ -73,6 +74,8 @@ module Ribbon
     end
 
     def _load_plugin(plugin)
+      _load_plugin_block(plugin).tap { |p| plugin = p if p }
+
       case plugin
       when Class
         plugin < Plugin && plugin or
@@ -82,6 +85,10 @@ module Ribbon
       else
         raise Errors::LoadError, "Invalid plugin identifier: #{plugin.inspect}"
       end
+    end
+
+    def _load_plugin_block(plugin)
+      @_load_plugin_block && @_load_plugin_block.call(plugin)
     end
   end # Plugins
 end # Ribbon

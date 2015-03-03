@@ -1,7 +1,8 @@
 module Ribbon
   RSpec.describe Plugins do
     let(:plugins) { Plugins.new }
-    let(:plugin) { Plugins::Plugin.create }
+    let(:empty_plugin) { Plugins::Plugin.create }
+    let(:plugin) { empty_plugin }
     let(:args) { [1, :two, 'three'] }
     let(:block) { Proc.new {} }
 
@@ -49,6 +50,45 @@ module Ribbon
           )
         end
       end # invalid plugin class
+
+      context 'with string' do
+        let(:plugin) { 'some string' }
+
+        it 'should raise error' do
+          expect { subject }.to raise_error(
+            Plugins::Errors::LoadError, "Invalid plugin identifier: #{plugin.inspect}"
+          )
+        end
+
+        context 'with load block returning plugin' do
+          let(:plugins) { Plugins.new { |p| empty_plugin } }
+
+          it 'should return plugin instance' do
+            expect(subject).to be_an empty_plugin
+          end
+        end # with load block returning plugin
+
+        context 'with load block returning nil' do
+          let(:plugins) { Plugins.new { |p| nil } }
+
+          it 'should raise error' do
+            expect { subject }.to raise_error(
+              Plugins::Errors::LoadError, "Invalid plugin identifier: #{plugin.inspect}"
+            )
+          end
+        end # with load block returning nil
+
+        context 'with load block returning invalid plugin' do
+          let(:plugins) { Plugins.new { |p| Class.new } }
+
+          it 'should raise error' do
+            expect { subject }.to raise_error(
+              Plugins::Errors::LoadError,
+              /^Invalid plugin class: #<Class:.*> Must extend Plugin.$/
+            )
+          end
+        end # with load block returning invalid plugin
+      end # with string
     end # #add
 
     describe '#around' do
