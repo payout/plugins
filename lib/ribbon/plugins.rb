@@ -2,16 +2,17 @@ require 'ribbon/plugins/version'
 
 module Ribbon
   class Plugins
-    autoload(:Errors,      'ribbon/plugins/errors')
-    autoload(:Plugin,      'ribbon/plugins/plugin')
-    autoload(:AroundStack, 'ribbon/plugins/around_stack')
-    autoload(:BlockStack,  'ribbon/plugins/block_stack')
+    autoload(:Errors,         'ribbon/plugins/errors')
+    autoload(:Plugin,         'ribbon/plugins/plugin')
+    autoload(:AroundStack,    'ribbon/plugins/around_stack')
+    autoload(:BlockStack,     'ribbon/plugins/block_stack')
+    autoload(:ComponentMixin, 'ribbon/plugins/component_mixin')
 
-    attr_reader :component
+    attr_reader :component, :plugin_loader
 
     def initialize(component=nil, &block)
       @component = component
-      @_plugin_loader = block
+      @plugin_loader = block
     end
 
     def add(plugin=nil, &block)
@@ -74,7 +75,7 @@ module Ribbon
     end
 
     def _load_plugin(plugin)
-      _plugin_loader(plugin).tap { |p| plugin = p if p }
+      _call_plugin_loader(plugin).tap { |p| plugin = p if p }
 
       case plugin
       when Class
@@ -87,8 +88,8 @@ module Ribbon
       end
     end
 
-    def _plugin_loader(plugin)
-      @_plugin_loader && @_plugin_loader.call(plugin)
+    def _call_plugin_loader(plugin)
+      plugin_loader && component.instance_exec(plugin, &plugin_loader)
     end
   end # Plugins
 end # Ribbon

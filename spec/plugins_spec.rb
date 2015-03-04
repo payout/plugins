@@ -61,7 +61,8 @@ module Ribbon
         end
 
         context 'with load block returning plugin' do
-          let(:plugins) { Plugins.new { |p| empty_plugin } }
+          before { $empty_plugin = empty_plugin }
+          let(:plugins) { Plugins.new { |p| $empty_plugin } }
 
           it 'should return plugin instance' do
             expect(subject).to be_an empty_plugin
