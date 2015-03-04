@@ -24,6 +24,11 @@ class Ribbon::Plugins
 
       outer_most = call_stack.pop
       outer_most.call(call_stack, *args)
+
+      # This shouldn't happen unless the AroundStack isn't functioning properly.
+      raise Errors::Error, "Block passed was not called!" unless inner_most.called?
+
+      inner_most.retval
     end
 
     class AroundWrapper
@@ -49,14 +54,22 @@ class Ribbon::Plugins
 
     class WrappedBlock
       attr_reader :block
+      attr_reader :retval
 
       def initialize(&block)
         @block = block
       end
 
+      def called?
+        !!@_called
+      end
+
       def call(call_stack, *args)
         raise Errors::Error, 'receiving non-empty call stack' unless call_stack.empty?
-        block.call(*args)
+        block.call(*args).tap { |retval|
+          @retval = retval
+          @_called = true
+        }
       end
     end
   end # AroundStack

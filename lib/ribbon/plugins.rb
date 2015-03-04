@@ -39,8 +39,10 @@ module Ribbon
 
     def perform(subject, *args, &block)
       before(subject, *args)
-      around(subject, *args, &block)
+      retval = around(subject, *args, &block)
       after(subject, *args)
+
+      retval
     end
 
     private

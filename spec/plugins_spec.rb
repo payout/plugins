@@ -4,7 +4,7 @@ module Ribbon
     let(:empty_plugin) { Plugins::Plugin.create }
     let(:plugin) { empty_plugin }
     let(:args) { [1, :two, 'three'] }
-    let(:block) { Proc.new {} }
+    let(:block) { Proc.new { 'block retval' } }
 
     describe '#add' do
       subject { plugins.add(plugin) }
@@ -98,11 +98,10 @@ module Ribbon
       let(:call_counter) { double('call_counter') }
       before { allow(call_counter).to receive(:call) }
 
-      # Make call_counter available to callback block
+      # Make call_counter available to around_callback block
       before { $call_counter = call_counter }
-      let(:callback) { Proc.new { |*args| $call_counter.call(*args); perform_subject } }
-
-      before { $callback = callback }
+      let(:around_callback) { Proc.new { |*args| $call_counter.call(*args); perform_subject; 'around_callback retval' } }
+      before { $around_callback = around_callback }
 
       subject { plugins.around(:subject, *args, &block) }
       after { subject }
@@ -110,6 +109,10 @@ module Ribbon
       context 'with no plugins' do
         it 'should run block' do
           expect(block).to receive(:call).with(*args).once
+        end
+
+        it 'should return block retval' do
+          is_expected.to eq 'block retval'
         end
       end # with no plugins
 
@@ -119,15 +122,16 @@ module Ribbon
         it 'should run block' do
           expect(block).to receive(:call).with(*args).once
         end
+
+        it 'should return block retval' do
+          is_expected.to eq 'block retval'
+        end
       end # with empty plugin
 
       context 'with non-empty plugin' do
         let(:plugin) {
           Plugins::Plugin.create {
-            around_subject { |*args|
-              $call_counter.call(*args)
-              perform_subject
-            }
+            around_subject(&$around_callback)
           }
         }
 
@@ -137,18 +141,19 @@ module Ribbon
           expect(block).to receive(:call).with(*args).once
         end
 
-        it 'should run plugin callback' do
+        it 'should run plugin around_callback' do
           expect(call_counter).to receive(:call).with(*args).once
+        end
+
+        it 'should return block retval' do
+          is_expected.to eq 'block retval'
         end
       end # with non-empty plugin
 
       context 'with three plugins' do
         let(:plugin) {
           Plugins::Plugin.create {
-            around_subject { |*args|
-              $call_counter.call(*args)
-              perform_subject
-            }
+            around_subject(&$around_callback)
           }
         }
 
@@ -158,19 +163,46 @@ module Ribbon
           expect(block).to receive(:call).with(*args).once
         end
 
-        it 'should run plugin callback' do
+        it 'should run plugin around_callback' do
           expect(call_counter).to receive(:call).with(*args).exactly(3).times
+        end
+
+        it 'should return block retval' do
+          is_expected.to eq 'block retval'
         end
       end # with three plugins
     end
 
     describe '#perform' do
-      subject { plugins }
-      after { subject.perform(:subject, *args, &block) }
+      context 'with plugin with all around_callbacks' do
+        let(:plugin) {
+          Plugins::Plugin.create {
+            before_subject { 'before retval' }
+            around_subject { perform_subject; 'around_retval' }
+            after_subject { 'after retval' }
+          }
+        }
 
-      it { is_expected.to receive(:before).with(:subject, *args, &block).once }
-      it { is_expected.to receive(:around).with(:subject, *args, &block).once }
-      it { is_expected.to receive(:after).with(:subject, *args, &block).once }
+        before { plugins.add(plugin) }
+        subject { plugins.perform(:subject, *args, &block) }
+        after { subject }
+
+        it 'should call before' do
+          expect(plugins).to receive(:before).with(:subject, *args, &block).once
+        end
+
+        it 'should call around' do
+          expect(plugins).to receive(:around).with(:subject, *args, &block).once
+        end
+
+        it 'should call after' do
+          expect(plugins).to receive(:after).with(:subject, *args, &block).once
+        end
+
+        it 'should return block retval' do
+          is_expected.to eq 'block retval'
+        end
+      end # with plugin with all around_callbacks defined.
     end
   end
 end

@@ -15,7 +15,7 @@ class Ribbon::Plugins
 
     describe '#call' do
       let(:args) { [1, :two, 'three'] }
-      let(:block) { Proc.new {} }
+      let(:block) { Proc.new { 'block return value' } }
 
       context 'without passed block' do
         subject { stack.call(*args) }
@@ -40,11 +40,12 @@ class Ribbon::Plugins
 
         # Make call_counter available to wrapper block
         before { $call_counter = call_counter }
-        before { 3.times { subject.push(&wrapper) } }
+        before { 3.times { stack.push(&wrapper) } }
 
         context 'passing no args to perform_test' do
           let(:wrapper) { Proc.new { |*args| $call_counter.call(*args); perform_test } }
-          after { subject.call(*args, &block) }
+          subject { stack.call(*args, &block) }
+          after { subject }
 
           it 'should call block' do
             expect(block).to receive(:call).with(*args).once
@@ -56,11 +57,16 @@ class Ribbon::Plugins
         end # passing no args to perform_test
 
         context 'passing incremented counter to perform_test' do
-          let(:wrapper) { Proc.new { |counter| $call_counter.call(counter); perform_test(counter + 1) } }
-          after { subject.call(0, &block) }
+          let(:wrapper) { Proc.new { |counter| $call_counter.call(counter); perform_test(counter + 1); 'wrapper return value' } }
+          subject { stack.call(0, &block) }
+          after { subject }
 
           it 'should call block with incremented counter' do
             expect(block).to receive(:call).with(3).once
+          end
+
+          it 'should return the return value of block' do
+            is_expected.to eq block.call
           end
 
           it 'should execute all wrappers' do
