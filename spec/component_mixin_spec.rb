@@ -62,6 +62,12 @@ module Ribbon
             end # with additional args
           end # with valid plugin
 
+          context 'with plugin block' do
+            subject { component.plugin { def test_method; end } }
+            it { is_expected.to be_a Plugin }
+            it { is_expected.to respond_to(:test_method) }
+          end # with plugin block
+
           context 'with invalid plugin' do
             let(:plugin) { Class.new }
 

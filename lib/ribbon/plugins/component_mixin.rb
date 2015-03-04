@@ -39,8 +39,8 @@ module Ribbon
 
       ##
       # Add a plugin.
-      def plugin(plugin, *args)
-        plugins.add(plugin, *args)
+      def plugin(*args, &block)
+        plugins.add(*args, &block)
       end
     end
   end
