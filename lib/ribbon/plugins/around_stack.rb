@@ -68,6 +68,13 @@ class Ribbon::Plugins
           wrapped.call(call_stack, *args)
         }
 
+        singleton_class.instance_exec(subject) { |subject|
+          alias_method subject, "perform_#{subject}"
+
+          # Don't allow these to be overriden
+          attr_reader :stack, :subject, :block
+        }
+
         instance_exec(*args, &block)
       end
     end

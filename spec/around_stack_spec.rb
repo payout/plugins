@@ -57,7 +57,7 @@ class Ribbon::Plugins
         end # passing no args to perform_test
 
         context 'passing incremented counter to perform_test' do
-          let(:wrapper) { Proc.new { |counter| $call_counter.call(counter); perform_test(counter + 1); 'wrapper return value' } }
+          let(:wrapper) { Proc.new { |counter| $call_counter.call(counter); test(counter + 1); 'wrapper return value' } }
           subject { stack.call(0, &block) }
           after { subject }
 
