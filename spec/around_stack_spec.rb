@@ -81,7 +81,7 @@ class Ribbon::Plugins
     describe AroundStack::AroundWrapper do
       describe '#call' do
         context 'with empty call stack' do
-          let(:wrapper) { AroundStack::AroundWrapper.new(:subject) }
+          let(:wrapper) { AroundStack::AroundWrapper.new(stack, :subject) }
           subject { wrapper.call([]) }
 
           it 'should raise exception' do

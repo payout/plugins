@@ -1,17 +1,27 @@
 class Ribbon::Plugins
   class AroundStack
     attr_reader :subject
+    attr_accessor :scope
 
-    def initialize(subject)
+    def initialize(subject, scope=nil)
       @subject = subject.to_sym
+      @scope = scope
       @_stack = []
     end
 
     def push(&block)
       raise Errors::Error, "Must pass block" unless block_given?
 
-      AroundWrapper.new(subject, &block).tap { |wrapper|
+      AroundWrapper.new(self, subject, &block).tap { |wrapper|
         @_stack.push(wrapper)
+      }
+    end
+
+    def dup
+      AroundStack.new(subject, scope).tap { |stack|
+        @_stack.each { |wrapper|
+          stack.push(&wrapper.block)
+        }
       }
     end
 
@@ -32,11 +42,21 @@ class Ribbon::Plugins
     end
 
     class AroundWrapper
-      attr_reader :subject, :block
+      attr_reader :stack, :subject, :block
 
-      def initialize(subject, &block)
+      def initialize(stack, subject, &block)
+        @stack = stack
         @subject = subject
         @block = block
+      end
+
+      def scope
+        stack.scope
+      end
+
+      def method_missing(meth, *args, &block)
+        super unless scope
+        scope.send(meth, *args, &block)
       end
 
       def call(call_stack, *args)
@@ -64,6 +84,8 @@ class Ribbon::Plugins
         !!@_called
       end
 
+      ##
+      # Call the wrapped block, ignoring the scope and call_stack arguments.
       def call(call_stack, *args)
         raise Errors::Error, 'receiving non-empty call stack' unless call_stack.empty?
         block.call(*args).tap { |retval|

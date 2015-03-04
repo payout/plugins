@@ -53,7 +53,10 @@ class Ribbon::Plugins
 
     private
     def _callbacks(type, subject)
-      self.class._callbacks(type, subject)
+      ((@_callbacks ||= {})[type.to_sym] ||= {})[subject.to_sym] ||=
+        self.class._callbacks(type, subject).dup.tap { |stack|
+          stack.scope = self
+        }
     end
   end # Plugin
 end # Ribbon::Plugins

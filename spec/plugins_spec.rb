@@ -244,6 +244,54 @@ module Ribbon
 
         it { is_expected.to eq 5 }
       end # with plugin with incrementing arounds
-    end
+
+      context 'with plugin with instance method' do
+        let(:plugin) {
+          Plugins::Plugin.create {
+            before_subject { |*args| a_method(:before, *args) }
+            around_subject { |*args| a_method(:around, *args); perform_subject }
+            after_subject { |*args| a_method(:after, *args) }
+
+            def a_method(*args); end
+          }
+        }
+
+        let(:plugin_instance) { plugins.add(plugin) }
+        before { allow(plugin_instance).to receive(:a_method) }
+
+        subject { plugins.perform(:subject, *args, &block) }
+        after { subject }
+
+        it 'should call instance method in before' do
+          expect(plugin_instance).to receive(:a_method).with(:before, *args).once
+        end
+
+        it 'should call instance method in around' do
+          expect(plugin_instance).to receive(:a_method).with(:around, *args).once
+        end
+
+        it 'should call instance method in after' do
+          expect(plugin_instance).to receive(:a_method).with(:after, *args).once
+        end
+
+        it { is_expected.to eq 'block retval' }
+
+        context 'with multiple instances of the same plugin' do
+          # Check that multiple instances of the same plugin execute within
+          # their own scope.
+          let(:plugin_instance2) { plugins.add(plugin) }
+          before { allow(plugin_instance2).to receive(:a_method) }
+
+          it { expect(plugin_instance).to receive(:a_method).with(:before, *args).once }
+          it { expect(plugin_instance).to receive(:a_method).with(:around, *args).once }
+          it { expect(plugin_instance).to receive(:a_method).with(:after, *args).once }
+
+          it { expect(plugin_instance2).to receive(:a_method).with(:before, *args).once }
+          it { expect(plugin_instance2).to receive(:a_method).with(:around, *args).once }
+          it { expect(plugin_instance2).to receive(:a_method).with(:after, *args).once }
+        end
+
+      end # with plugin with instance method
+    end # #perform
   end
 end

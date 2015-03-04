@@ -51,7 +51,7 @@ module Ribbon
     end
 
     def _around_stack
-      @__around_stack ||= AroundStack.new(:block)
+      @__around_stack ||= AroundStack.new(:block, self)
     end
 
     def _add_plugin(plugin)
