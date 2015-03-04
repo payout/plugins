@@ -38,7 +38,7 @@ module Ribbon
         it 'should return a plugin instance' do
           expect(subject).to be_a Plugins::Plugin
         end
-      end
+      end # with block
 
       context 'with invalid plugin class' do
         let(:plugin) { Class.new }
@@ -90,6 +90,20 @@ module Ribbon
           end
         end # with load block returning invalid plugin
       end # with string
+
+      context 'with additional initialization args' do
+        before do
+          plugin.class_eval {
+            def initialize(plugins, *args)
+              super(plugins)
+            end
+          }
+        end
+
+        subject { plugins.add(plugin, 1, :two, 'three') }
+        after { subject }
+        it { expect(plugin).to receive(:new).with(plugins, 1, :two, 'three').once }
+      end # with additional initialization args
     end # #add
 
     describe '#around' do

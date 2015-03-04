@@ -15,9 +15,9 @@ module Ribbon
       @plugin_loader = block
     end
 
-    def add(plugin=nil, &block)
+    def add(plugin=nil, *args, &block)
       plugin = _load(plugin, &block)
-      _add_plugin(plugin.new(self))
+      _add_plugin(plugin.new(self, *args))
     end
 
     def clear
