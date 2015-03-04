@@ -58,8 +58,8 @@ module Ribbon
       _plugins.push(plugin)
 
       _around_stack.push { |subject, *args|
-        plugin.around(subject, *args) {
-          perform_block
+        plugin.around(subject, *args) { |*args|
+          perform_block(subject, *args)
         }
       }
 

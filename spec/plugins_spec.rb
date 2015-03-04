@@ -203,6 +203,33 @@ module Ribbon
           is_expected.to eq 'block retval'
         end
       end # with plugin with all around_callbacks defined.
+
+      context 'with plugin with incrementing arounds' do
+        let(:block) { Proc.new { |count| count+1 } }
+        let(:call_counter) { Proc.new {} }
+        before { $call_counter = call_counter }
+        let(:around_callback) { Proc.new { |count| $call_counter.call(count); perform_count(count+1) } }
+        before { $around_callback = around_callback }
+        let(:plugin) {
+          Plugins::Plugin.create { around_count(&$around_callback) }
+        }
+
+        before { plugins.add(plugin); plugins.add(plugin); plugins.add(plugin) }
+        subject { plugins.perform(:count, 1, &block) }
+        after { subject }
+
+        it 'should pass count down plugins' do
+          expect(call_counter).to receive(:call).with(1).once
+          expect(call_counter).to receive(:call).with(2).once
+          expect(call_counter).to receive(:call).with(3).once
+        end
+
+        it 'should call block' do
+          expect(block).to receive(:call).with(4)
+        end
+
+        it { is_expected.to eq 5 }
+      end # with plugin with incrementing arounds
     end
   end
 end
