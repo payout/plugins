@@ -30,16 +30,36 @@ module Ribbon
       end # #plugins
 
       describe '#plugin' do
-        subject { component.plugin(plugin) }
+        let(:additional_args) { [] }
+        subject { component.plugin(plugin, *additional_args) }
 
         context 'without plugin_loader defined' do
           context 'with valid plugin' do
-            let(:plugin) { Plugin.create }
+            let(:plugin) {
+              Plugin.create {
+                def initialize(plugins, *args)
+                  super(plugins)
+                end
+              }
+            }
             after { subject }
 
-            it 'should pass plugin on to Plugins#add' do
-              expect(plugins).to receive(:add).with(plugin).once
-            end
+            context 'without additional args' do
+              it 'should pass plugin on to Plugins#add' do
+                expect(plugins).to receive(:add).with(plugin).once
+              end
+
+              it 'should only pass plugins instance to initializer' do
+                expect(plugin).to receive(:new).with(plugins).once
+              end
+            end # without additional args
+
+            context 'with additional args' do
+              let(:additional_args) { [1, :two, 'three'] }
+              it 'should pass additional args to plugin initializer' do
+                expect(plugin).to receive(:new).with(*([plugins] + additional_args)).once
+              end
+            end # with additional args
           end # with valid plugin
 
           context 'with invalid plugin' do
