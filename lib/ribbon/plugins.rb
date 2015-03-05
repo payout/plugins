@@ -21,8 +21,8 @@ module Ribbon
     end
 
     def clear
-      @_plugins = []
-      nil
+      @_plugins = nil
+      @_around_stack = nil
     end
 
     def before(subject, *args)
@@ -51,7 +51,7 @@ module Ribbon
     end
 
     def _around_stack
-      @__around_stack ||= AroundStack.new(:block, self)
+      @_around_stack ||= AroundStack.new(:block, self)
     end
 
     def _add_plugin(plugin)

@@ -185,7 +185,7 @@ module Ribbon
           is_expected.to eq 'block retval'
         end
       end # with three plugins
-    end
+    end # #around
 
     describe '#perform' do
       context 'with plugin with all around_callbacks' do
@@ -293,5 +293,34 @@ module Ribbon
 
       end # with plugin with instance method
     end # #perform
+
+    describe '#clear' do
+      context 'with plugin added' do
+        let(:plugin) {
+          Plugins::Plugin.create {
+            before_subject { |*args| call_counter(:before) }
+            around_subject { |*args| call_counter(:around); perform_subject }
+            after_subject { |*args| call_counter(:after) }
+            def call_counter(*args); end
+          }
+        }
+
+        let(:plugin_instance) { plugins.add(plugin) }
+        before { allow(plugin_instance).to receive(:call_counter) }
+        subject { plugin_instance }
+        after { plugins.perform(:subject, &block) }
+
+        context 'before clear' do
+          it { is_expected.to receive(:call_counter).with(:before).once }
+          it { is_expected.to receive(:call_counter).with(:around).once }
+          it { is_expected.to receive(:call_counter).with(:after).once }
+        end
+
+        context 'after clear' do
+          before { plugins.clear }
+          it { is_expected.not_to receive(:call_counter) }
+        end
+      end # with plugin added
+    end # #clear
   end
 end
