@@ -1,4 +1,4 @@
-[![Gem Version](https://badge.fury.io/rb/ribbon-plugins.svg)](http://badge.fury.io/rb/ribbon-plugins) [![Code Climate](https://codeclimate.com/github/ribbon/plugins/badges/gpa.svg)](https://codeclimate.com/github/ribbon/plugins) [![Test Coverage](https://codeclimate.com/github/ribbon/plugins/badges/coverage.svg)](https://codeclimate.com/github/ribbon/plugins)
+[![Gem Version](https://badge.fury.io/rb/ribbon-plugins.svg)](http://badge.fury.io/rb/ribbon-plugins) [![Code Climate](https://codeclimate.com/github/ribbon/plugins/badges/gpa.svg)](https://codeclimate.com/github/ribbon/plugins) [![Test Coverage](https://codeclimate.com/github/ribbon/plugins/badges/coverage.svg)](https://codeclimate.com/github/ribbon/plugins) [![Build Status](https://semaphoreapp.com/api/v1/projects/0d4247ed-8481-4df7-b0db-6e35e7dd4158/365369/shields_badge.svg)](https://semaphoreapp.com/ribbon/plugins--2)
 
 # Plugins
 
