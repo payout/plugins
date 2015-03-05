@@ -1,4 +1,4 @@
-[![Gem Version](https://badge.fury.io/rb/ribbon-plugins.svg)](http://badge.fury.io/rb/ribbon-plugins) [![Code Climate](https://codeclimate.com/github/ribbon/plugins/badges/gpa.svg)](https://codeclimate.com/github/ribbon/plugins)
+[![Gem Version](https://badge.fury.io/rb/ribbon-plugins.svg)](http://badge.fury.io/rb/ribbon-plugins) [![Code Climate](https://codeclimate.com/github/ribbon/plugins/badges/gpa.svg)](https://codeclimate.com/github/ribbon/plugins) [![Test Coverage](https://codeclimate.com/github/ribbon/plugins/badges/coverage.svg)](https://codeclimate.com/github/ribbon/plugins)
 
 # Plugins
 
@@ -36,7 +36,7 @@ In Plugins, whatever code you're writing that will have plugin support is called
 require 'ribbon/plugins'
 class ComponentWithPlugins
   include Ribbon::Plugins::ComponentMixin
-  
+
   ##
   # Allow users to use the :logging symbol to reference the LoggingPlugin
   plugin_loader { |plugin|
@@ -45,7 +45,7 @@ class ComponentWithPlugins
       LoggingPlugin
     end
   }
-  
+
   def do_something(*args)
     plugins.perform(:do_something, *args) { |*args|
       puts "Doing something: #{args.inspect}"
@@ -67,7 +67,7 @@ class LoggingPlugin < Ribbon::Plugins::Plugin
     # Any instance methods can be called within callback blocks.
     log("Sending these args: #{args.inspect}")
   end
-  
+
   around_do_something do |*args|
     begin
       do_something # Magic method to call code being performed
@@ -75,11 +75,11 @@ class LoggingPlugin < Ribbon::Plugins::Plugin
       log("Exception occurred! #{e.inspect}")
     end
   end
-  
+
   after_do_something do |*args|
     log("Finished with args: #{args.inspect}")
   end
-  
+
   private
   def log(message)
     puts "Logging Message: #{message}"
@@ -147,9 +147,9 @@ class CustomPlugin < Ribbon::Plugins::Plugin
 
   around_i_do_something do |*args|
     puts "And you won't like it..."
-    
+
     perform_i_do_something # Just `i_do_something` will also work.
-    
+
     puts "But too bad..."
   end
 
@@ -157,7 +157,7 @@ class CustomPlugin < Ribbon::Plugins::Plugin
     puts "Because I just did it."
     helper_method
   end
-  
+
   # All *instance* methods will be available.
   def helper_method
     puts "Running helper method"
