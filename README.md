@@ -107,7 +107,9 @@ component.do_something(1, :two, 'three')
 # Doing something: [1, :two, "three"]
 # Logging Message: Finished with args: [1, :two, "three"]
 ```
+
 User's can also define their own custom plugins:
+
 ```ruby
 component.plugin {
   after_do_something {
