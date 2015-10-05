@@ -1,4 +1,4 @@
-class Ribbon::Plugins
+class Plugins
   RSpec.describe Plugin do
     let(:args) { [1, :two, 'three'] }
 

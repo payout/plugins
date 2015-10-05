@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ribbon-plugins (0.2.4)
+    plugins (0.3.0)
 
 GEM
   remote: https://rubygems.org/
@@ -35,5 +35,5 @@ PLATFORMS
 
 DEPENDENCIES
   codeclimate-test-reporter
-  ribbon-plugins!
+  plugins!
   rspec (~> 3.2, >= 3.2.0)

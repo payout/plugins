@@ -1,4 +1,4 @@
-class Ribbon::Plugins
+class Plugins
   module Errors
     class Error < StandardError; end
     class LoadError < Error; end
