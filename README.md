@@ -13,7 +13,7 @@ within each plugin.
 Add this to your Gemfile:
 
 ```
-gem 'payout-plugins'
+gem 'plugins'
 ```
 
 Then run
