@@ -1,4 +1,4 @@
-class Ribbon::Plugins
+class Plugins
   class BlockStack
     attr_accessor :scope
 

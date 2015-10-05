@@ -1,4 +1,4 @@
-[![Gem Version](https://badge.fury.io/rb/ribbon-plugins.svg)](http://badge.fury.io/rb/ribbon-plugins) [![Code Climate](https://codeclimate.com/github/ribbon/plugins/badges/gpa.svg)](https://codeclimate.com/github/ribbon/plugins) [![Test Coverage](https://codeclimate.com/github/ribbon/plugins/badges/coverage.svg)](https://codeclimate.com/github/ribbon/plugins) [![Build Status](https://semaphoreapp.com/api/v1/projects/0d4247ed-8481-4df7-b0db-6e35e7dd4158/365369/shields_badge.svg)](https://semaphoreapp.com/ribbon/plugins--2) [![Inch CI](http://inch-ci.org/github/ribbon/plugins.png)](http://inch-ci.org/github/ribbon/plugins)
+[![Gem Version](https://badge.fury.io/rb/payout-plugins.svg)](http://badge.fury.io/rb/payout-plugins) [![Code Climate](https://codeclimate.com/github/payout/plugins/badges/gpa.svg)](https://codeclimate.com/github/payout/plugins) [![Test Coverage](https://codeclimate.com/github/payout/plugins/badges/coverage.svg)](https://codeclimate.com/github/payout/plugins) [![Build Status](https://semaphoreapp.com/api/v1/projects/0d4247ed-8481-4df7-b0db-6e35e7dd4158/365369/shields_badge.svg)](https://semaphoreapp.com/payout/plugins--2) [![Inch CI](http://inch-ci.org/github/payout/plugins.png)](http://inch-ci.org/github/payout/plugins)
 
 
 # Plugins
@@ -13,7 +13,7 @@ within each plugin.
 Add this to your Gemfile:
 
 ```
-gem 'ribbon-plugins'
+gem 'payout-plugins'
 ```
 
 Then run
@@ -25,18 +25,18 @@ bundle
 Or you can install it manually:
 
 ```
-gem install ribbon-plugins
+gem install plugins
 ```
 
 ## Basic Usage
 
 ### Define your component
-In Plugins, whatever code you're writing that will have plugin support is called a "component". The `Ribbon::Plugins::ComponentMixin` simplifies integrating with the Plugins gem, although it's not required that you use it.
+In Plugins, whatever code you're writing that will have plugin support is called a "component". The `Plugins::ComponentMixin` simplifies integrating with the Plugins gem, although it's not required that you use it.
 
 ```ruby
-require 'ribbon/plugins'
+require 'plugins'
 class ComponentWithPlugins
-  include Ribbon::Plugins::ComponentMixin
+  include Plugins::ComponentMixin
 
   ##
   # Allow users to use the :logging symbol to reference the LoggingPlugin
@@ -58,7 +58,7 @@ end
 ### Define your plugins
 
 ```ruby
-class LoggingPlugin < Ribbon::Plugins::Plugin
+class LoggingPlugin < Plugins::Plugin
   def initialize(plugins, file_name=nil)
     super(plugins)
     raise "Logging to a file is't supported yet!" if file_name
@@ -140,9 +140,9 @@ that you defined them.
 #### Extending `Plugins::Plugin`
 
 ```ruby
-require 'ribbon/plugins'
+require 'plugins'
 
-class CustomPlugin < Ribbon::Plugins::Plugin
+class CustomPlugin < Plugins::Plugin
   before_i_do_something do |*args|
     puts "I'm about to do something..."
   end
@@ -173,7 +173,7 @@ end
 You can also create on-the-fly plugins:
 
 ```ruby
-custom_plugin = Ribbon::Plugins::Plugin.create do
+custom_plugin = Plugins::Plugin.create do
   before_brush_teeth do
     floss
   end

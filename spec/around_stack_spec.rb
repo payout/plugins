@@ -1,4 +1,4 @@
-class Ribbon::Plugins
+class Plugins
   RSpec.describe AroundStack do
     let(:stack) { AroundStack.new(:test) }
     subject { stack }

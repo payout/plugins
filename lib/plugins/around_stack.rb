@@ -1,4 +1,4 @@
-class Ribbon::Plugins
+class Plugins
   class AroundStack
     attr_reader :subject
     attr_accessor :scope
@@ -102,4 +102,4 @@ class Ribbon::Plugins
       end
     end
   end # AroundStack
-end # Ribbon::Plugins
+end # Plugins

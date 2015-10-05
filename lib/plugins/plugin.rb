@@ -1,4 +1,4 @@
-class Ribbon::Plugins
+class Plugins
   class Plugin
     class << self
       def create(&block)
@@ -59,4 +59,4 @@ class Ribbon::Plugins
         }
     end
   end # Plugin
-end # Ribbon::Plugins
+end # Plugins
